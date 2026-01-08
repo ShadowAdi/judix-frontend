@@ -243,22 +243,3 @@ export const caseService = {
 };
 
 export { api };
-
-export const apiClient = {
-  get: async (url: string) => {
-    const response = await api.get(url);
-    return response.data;
-  },
-  post: async (url: string, data: any) => {
-    const response = await api.post(url, data);
-    return response.data;
-  },
-  patch: async (url: string, data: any) => {
-    const response = await api.patch(url, data);
-    return response.data;
-  },
-  delete: async (url: string) => {
-    const response = await api.delete(url);
-    return response.data;
-  },
-};

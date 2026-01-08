@@ -8,7 +8,7 @@ import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { apiClient, CaseInterface, caseService } from "@/lib/auth";
+import { CaseInterface, caseService } from "@/lib/auth";
 import { getStatusColor } from "@/lib/status-case";
 
 export default function CaseDetail() {
@@ -48,7 +48,7 @@ export default function CaseDetail() {
 
     setIsSaving(true);
     try {
-      const updatedCase = await apiClient.patch(`/api/cases/${caseId}`, {
+      const updatedCase = await caseService.update(caseId, {
         description: editedDescription,
         status: editedStatus,
       });
@@ -72,7 +72,7 @@ export default function CaseDetail() {
     if (!case_) return;
 
     try {
-      await apiClient.patch(`/api/cases/${caseId}`, { status: "closed" });
+      await caseService.update(caseId, { status: "closed" });
       setCase({ ...case_, status: "closed" });
       setEditedStatus("closed");
     } catch (error) {
