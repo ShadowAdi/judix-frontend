@@ -4,7 +4,7 @@ A modern, scalable web application built with Next.js 16 for managing legal case
 
 ## 🚀 Live Demo
 
-[Demo Link] - *Add your deployed link here*
+[https://judix-frontend-ten.vercel.app] - *Add your deployed link here*
 
 ## 📋 Assignment Overview
 
