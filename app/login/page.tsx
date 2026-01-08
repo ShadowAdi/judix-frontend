@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { authService, isAuthenticated } from "@/lib/auth";
+import { toast } from "sonner";
 
 const loginSchema = z.object({
   email: z.email("Invalid email address"),
@@ -43,10 +44,12 @@ export default function Login() {
     setError("");
 
     try {
-      const { token, user } = await authService.login(data);
-      console.log('Login successful:', { token: !!token, user: user.email });
+      await authService.login(data);
+
+      toast.success("Login Successfull")
       router.push("/dashboard");
     } catch (err) {
+      toast.error(`Failed to login user`)
       setError(err instanceof Error ? err.message : "Login failed");
     } finally {
       setIsLoading(false);

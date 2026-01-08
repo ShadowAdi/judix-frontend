@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { caseService } from "@/lib/auth";
+import { toast } from "sonner";
 
 const caseSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -81,6 +82,7 @@ export function CaseFormComponent({ onSuccess, onCancel }: CaseFormProps) {
       reset();
       onSuccess?.();
     } catch (err) {
+      toast.error(`Failed to create case`)
       setError(err instanceof Error ? err.message : "Failed to create case");
     } finally {
       setIsLoading(false);

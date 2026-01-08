@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import {  getUserFromToken, removeToken,  caseService, CaseInterface } from "@/lib/auth";
+import { toast } from "sonner";
 
 export default function Dashboard() {
   const [cases, setCases] = useState<CaseInterface[]>([]);
@@ -51,6 +52,7 @@ export default function Dashboard() {
       const data = await caseService.getAll();
       setCases(data || []);
     } catch (error) {
+      toast.error(`Failed to fetch cases`)
       console.error("Failed to fetch cases:", error);
     } finally {
       setIsLoading(false);

@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { CaseInterface, caseService } from "@/lib/auth";
 import { getStatusColor } from "@/lib/status-case";
+import { toast } from "sonner";
 
 export default function CaseDetail() {
   const [case_, setCase] = useState<CaseInterface | null>(null);
@@ -25,6 +26,7 @@ export default function CaseDetail() {
       const data = await caseService.getById(caseId);
       setCase(data);
     } catch (error) {
+      toast.error(`Failed to fetch case`)
       console.error("Failed to fetch case:", error);
     } finally {
       setIsLoading(false);

@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { authService, isAuthenticated } from "@/lib/auth";
 import { Textarea } from "@/components/ui/textarea";
+import { toast } from "sonner";
 
 const registerSchema = z.object({
   username: z.string().min(2, "Name must be at least 2 characters"),
@@ -48,11 +49,12 @@ export default function Register() {
 
     try {
       const response = await authService.register(data)
-      console.log("Response ", response)
       if (response) {
+        toast.success("User Registered")
         router.push("/login");
       }
     } catch (err) {
+      toast.error(`Failed to regsiter user`)
       setError(err instanceof Error ? err.message : "Registration failed");
     } finally {
       setIsLoading(false);

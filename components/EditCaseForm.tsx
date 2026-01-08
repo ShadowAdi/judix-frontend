@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { caseService, CaseInterface } from "@/lib/auth";
+import { toast } from "sonner";
 
 const editCaseSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -92,6 +93,7 @@ export function EditCaseFormComponent({ case_, onSuccess, onCancel }: EditCaseFo
       setSuccess(true);
       onSuccess?.(updatedCase);
     } catch (err) {
+        toast.error(`Failed to update case`)
       setError(err instanceof Error ? err.message : "Failed to update case");
     } finally {
       setIsLoading(false);
