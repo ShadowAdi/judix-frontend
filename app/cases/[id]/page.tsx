@@ -114,7 +114,7 @@ export default function CaseDetail() {
                       case_.status
                     )}`}
                   >
-                    {case_.status.replace("-", " ")}
+                    {case_.status}
                   </span>
                   <span className="text-gray-500">
                     Filed: {new Date(case_.filedAt).toLocaleDateString()}
