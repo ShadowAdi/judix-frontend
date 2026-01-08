@@ -156,7 +156,7 @@ export default function Dashboard() {
               >
                 <option value="">All Statuses</option>
                 <option value="draft">Draft</option>
-                <option value="open">Open</option>
+                <option value="active">Active</option>
                 <option value="closed">Closed</option>
               </select>
             </div>

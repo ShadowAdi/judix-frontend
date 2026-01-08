@@ -168,7 +168,7 @@ export default function CaseDetail() {
                   </div>
                   <div>
                     <span className="text-gray-600 font-medium">Status:</span>
-                    <span className="ml-2 text-gray-900">{case_.status.replace("-", " ")}</span>
+                    <span className="ml-2 text-gray-900">{case_.status}</span>
                   </div>
                 </div>
               </div>
