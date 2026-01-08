@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Search, Filter, LogOut } from "lucide-react";
+import { Plus, Search, Filter, LogOut, User } from "lucide-react";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { CaseCard } from "@/components/CaseCard";
 import { CaseFormComponent } from "@/components/CaseForm";
+import { ProfileUpdateModal } from "@/components/ProfileUpdateModal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -17,6 +18,7 @@ export default function Dashboard() {
   const [filteredCases, setFilteredCases] = useState<CaseInterface[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [showProfileModal, setShowProfileModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("");
   const router = useRouter();
@@ -70,6 +72,10 @@ export default function Dashboard() {
     fetchCases();
   };
 
+  const handleProfileUpdateSuccess = () => {
+    toast.success("Profile updated successfully!");
+  };
+
   if (isLoading) {
     return (
       <ProtectedRoute>
@@ -92,6 +98,15 @@ export default function Dashboard() {
               
               <div className="flex items-center gap-4">
                 <span className="text-gray-600">Welcome, {user?.username}</span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowProfileModal(true)}
+                  className="flex items-center gap-2 cursor-pointer!"
+                >
+                  <User className="h-4 w-4" />
+                  Profile
+                </Button>
                 <Button
                   variant="outline"
                   size="sm"
@@ -135,6 +150,12 @@ export default function Dashboard() {
               </Card>
             </div>
           )}
+
+          <ProfileUpdateModal
+            isOpen={showProfileModal}
+            onClose={() => setShowProfileModal(false)}
+            onSuccess={handleProfileUpdateSuccess}
+          />
 
           <div className="flex flex-col sm:flex-row gap-4 mb-6">
             <div className="relative flex-1">

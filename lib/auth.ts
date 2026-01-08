@@ -167,11 +167,28 @@ export const authService = {
       if (data.success) {
         return data.success
       } else {
-        alert("Failed to register user")
         console.log(`Failed to register user ${data.message || data.error}`)
       }
     } catch (error: any) {
       throw new Error(error.response?.data?.message || 'Registration failed');
+    }
+  },
+
+  updateUser: async (userData: { username: string; bio?: string }) => {
+    try {
+      const response = await api.patch('user/', userData,{
+        headers:{
+          Authorization:`Bearer ${getToken()}`
+        }
+      });
+      const data = await response.data
+      if (data.success) {
+        return data.success
+      } else {
+        console.log(`Failed to update user ${data.message || data.error}`)
+      }
+    } catch (error: any) {
+      throw new Error(error.response?.data?.message || 'Update Profile failed');
     }
   },
 };
