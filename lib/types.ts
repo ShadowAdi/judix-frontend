@@ -1,4 +1,3 @@
-// TypeScript interfaces based on MongoDB schemas
 
 export interface UserInterface {
   _id: string;
@@ -18,13 +17,12 @@ export interface CaseInterface {
   caseType: "civil" | "criminal" | "contract" | "corporate" | "other";
   status: "draft" | "active" | "closed";
   filedAt: string;
-  owner: string; // ObjectId as string
+  owner: string;
   isArchived: boolean;
   createdAt: string;
   updatedAt: string;
 }
 
-// API Response types
 export interface LoginResponse {
   token: string;
   user: UserInterface;
@@ -35,7 +33,6 @@ export interface RegisterResponse {
   user: UserInterface;
 }
 
-// Form types
 export interface LoginCredentials {
   email: string;
   password: string;

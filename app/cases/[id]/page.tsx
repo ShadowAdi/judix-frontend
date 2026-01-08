@@ -5,19 +5,16 @@ import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft, Archive, Edit2 } from "lucide-react";
 import Link from "next/link";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { EditCaseFormComponent } from "@/components/EditCaseForm";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Textarea } from "@/components/ui/textarea";
 import { CaseInterface, caseService } from "@/lib/auth";
 import { getStatusColor } from "@/lib/status-case";
 
 export default function CaseDetail() {
   const [case_, setCase] = useState<CaseInterface | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isEditing, setIsEditing] = useState(false);
-  const [editedDescription, setEditedDescription] = useState("");
-  const [editedStatus, setEditedStatus] = useState<"draft" | "active" | "closed">("draft");
-  const [isSaving, setIsSaving] = useState(false);
+  const [showEditForm, setShowEditForm] = useState(false);
 
   const params = useParams();
   const router = useRouter();
@@ -27,13 +24,8 @@ export default function CaseDetail() {
     try {
       const data = await caseService.getById(caseId);
       setCase(data);
-      if (data.description) {
-        setEditedDescription(data?.description);
-      }
-      setEditedStatus(data.status);
     } catch (error) {
       console.error("Failed to fetch case:", error);
-
     } finally {
       setIsLoading(false);
     }
@@ -43,29 +35,9 @@ export default function CaseDetail() {
     fetchCase();
   }, [caseId]);
 
-  const handleSave = async () => {
-    if (!case_) return;
-
-    setIsSaving(true);
-    try {
-      const updatedCase = await caseService.update(caseId, {
-        description: editedDescription,
-        status: editedStatus,
-      });
-      setCase(updatedCase);
-      setIsEditing(false);
-    } catch (error) {
-      console.error("Failed to update case:", error);
-      setCase({
-        ...case_,
-        description: editedDescription,
-        status: editedStatus as "draft" | "active" | "closed",
-        updatedAt: new Date().toISOString(),
-      });
-      setIsEditing(false);
-    } finally {
-      setIsSaving(false);
-    }
+  const handleEditSuccess = (updatedCase: CaseInterface) => {
+    setCase(updatedCase);
+    setShowEditForm(false);
   };
 
   const handleClose = async () => {
@@ -74,7 +46,6 @@ export default function CaseDetail() {
     try {
       await caseService.update(caseId, { status: "closed" });
       setCase({ ...case_, status: "closed" });
-      setEditedStatus("closed");
     } catch (error) {
       console.error("Failed to close case:", error);
     }
@@ -156,7 +127,7 @@ export default function CaseDetail() {
                   variant="outline"
                   size="sm"
                   className="cursor-pointer!"
-                  onClick={() => setIsEditing(!isEditing)}
+                  onClick={() => setShowEditForm(true)}
                 >
                   <Edit2 className="h-4 w-4" />
                 </Button>
@@ -195,19 +166,7 @@ export default function CaseDetail() {
                   </div>
                   <div>
                     <span className="text-gray-600 font-medium">Status:</span>
-                    {isEditing ? (
-                      <select
-                        value={editedStatus}
-                        onChange={(e) => setEditedStatus(e.target.value as "draft" | "active" | "closed")}
-                        className="ml-2 px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      >
-                        <option value="draft">Draft</option>
-                        <option value="active">Active</option>
-                        <option value="closed">Closed</option>
-                      </select>
-                    ) : (
-                      <span className="ml-2 text-gray-900">{case_.status.replace("-", " ")}</span>
-                    )}
+                    <span className="ml-2 text-gray-900">{case_.status.replace("-", " ")}</span>
                   </div>
                 </div>
               </div>
@@ -215,30 +174,11 @@ export default function CaseDetail() {
 
             <div className="mb-8">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Description</h3>
-              {isEditing ? (
-                <div>
-                  <Textarea
-                    value={editedDescription}
-                    onChange={(e) => setEditedDescription(e.target.value)}
-                    rows={6}
-                    className="w-full"
-                  />
-                  <div className="flex gap-2 mt-4">
-                    <Button onClick={handleSave} disabled={isSaving} className="cursor-pointer!">
-                      {isSaving ? "Saving..." : "Save Changes"}
-                    </Button>
-                    <Button variant="outline" className="cursor-pointer!" onClick={() => setIsEditing(false)}>
-                      Cancel
-                    </Button>
-                  </div>
-                </div>
-              ) : (
-                <p className="text-gray-700 whitespace-pre-wrap">{case_.description}</p>
-              )}
+              <p className="text-gray-700 whitespace-pre-wrap">{case_.description || "No description provided"}</p>
             </div>
 
-            {!isEditing && case_.status !== "closed" && (
-              <div className="flex gap-4">
+            {case_.status !== "closed" && (
+              <div className="flex gap-4 mb-8">
                 <Button onClick={handleClose} variant="outline" className="cursor-pointer!">
                   Close Case
                 </Button>
@@ -253,6 +193,22 @@ export default function CaseDetail() {
             </div>
           </Card>
         </main>
+
+        {/* Edit Case Modal */}
+        {showEditForm && (
+          <div className="fixed inset-0 bg-black/60 bg-opacity-20 flex items-center justify-center z-50 p-4">
+            <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6">
+              <div className="mb-6">
+                <h3 className="text-xl font-semibold text-gray-900">Edit Case</h3>
+              </div>
+              <EditCaseFormComponent
+                case_={case_}
+                onSuccess={handleEditSuccess}
+                onCancel={() => setShowEditForm(false)}
+              />
+            </Card>
+          </div>
+        )}
       </div>
     </ProtectedRoute>
   );
