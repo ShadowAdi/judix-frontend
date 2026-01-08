@@ -16,13 +16,13 @@ export default function Home() {
         
         <div className="flex gap-4 justify-center">
           <Link href="/login">
-            <Button size="lg" className="px-8 py-3 text-lg">
+            <Button size="lg" className="px-8 py-3 text-lg cursor-pointer!">
               Login
             </Button>
           </Link>
           
           <Link href="/register">
-            <Button variant="outline" size="lg" className="px-8 py-3 text-lg">
+            <Button variant="outline" size="lg" className="px-8 py-3 text-lg cursor-pointer!">
               Register
             </Button>
           </Link>

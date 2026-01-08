@@ -11,15 +11,18 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { authService } from "@/lib/auth";
+import { Textarea } from "@/components/ui/textarea";
 
-const loginSchema = z.object({
+const registerSchema = z.object({
+  username: z.string().min(2, "Name must be at least 2 characters"),
   email: z.email("Invalid email address"),
   password: z.string().min(3, "Password must be at least 3 characters"),
-});
+  bio: z.string().optional()
+})
 
-type LoginForm = z.infer<typeof loginSchema>;
+type RegisterForm = z.infer<typeof registerSchema>;
 
-export default function Login() {
+export default function Register() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
@@ -28,20 +31,22 @@ export default function Login() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<LoginForm>({
-    resolver: zodResolver(loginSchema),
+  } = useForm<RegisterForm>({
+    resolver: zodResolver(registerSchema),
   });
 
-  const onSubmit = async (data: LoginForm) => {
+  const onSubmit = async (data: RegisterForm) => {
     setIsLoading(true);
     setError("");
 
     try {
-      const { token, user } = await authService.login(data);
-      console.log('Login successful:', { token: !!token, user: user.email });
-      router.push("/dashboard");
+      const response = await authService.register(data)
+      console.log("Response ",response)
+      if (response) {
+        router.push("/login");
+      }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Login failed");
+      setError(err instanceof Error ? err.message : "Registration failed");
     } finally {
       setIsLoading(false);
     }
@@ -51,8 +56,8 @@ export default function Login() {
     <main className="flex items-center justify-center min-h-screen bg-gray-50">
       <Card className="w-full max-w-md p-8">
         <div className="mb-8 text-center">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h1>
-          <p className="text-gray-600">Sign in to your Judix account</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Create Account</h1>
+          <p className="text-gray-600">Start managing your cases with Judix</p>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -61,6 +66,19 @@ export default function Login() {
               {error}
             </div>
           )}
+
+          <div>
+            <Label htmlFor="name">Full Name</Label>
+            <Input
+              id="name"
+              type="text"
+              {...register("username")}
+              className="mt-1"
+            />
+            {errors.username && (
+              <p className="text-red-600 text-sm mt-1">{errors.username.message}</p>
+            )}
+          </div>
 
           <div>
             <Label htmlFor="email">Email</Label>
@@ -88,20 +106,32 @@ export default function Login() {
             )}
           </div>
 
+          <div>
+            <Label htmlFor="bio">Bio</Label>
+            <Textarea
+              id="bio"
+              {...register("bio")}
+              className="mt-1"
+            />
+            {errors.bio && (
+              <p className="text-red-600 text-sm mt-1">{errors.bio.message}</p>
+            )}
+          </div>
+
           <Button
             type="submit"
-            className="w-full"
+            className="w-full cursor-pointer!"
             disabled={isLoading}
           >
-            {isLoading ? "Signing in..." : "Sign In"}
+            {isLoading ? "Creating account..." : "Create Account"}
           </Button>
         </form>
 
         <div className="mt-6 text-center">
           <p className="text-gray-600">
-            {"Don't"} have an account?{" "}
-            <Link href="/register" className="text-blue-600 hover:underline">
-              Sign up
+            Already have an account?{" "}
+            <Link href="/login" className="text-blue-600 hover:underline">
+              Sign in
             </Link>
           </p>
         </div>
