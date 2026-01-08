@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
-import { authService } from "@/lib/auth";
+import { authService, isAuthenticated } from "@/lib/auth";
 import { Textarea } from "@/components/ui/textarea";
 
 const registerSchema = z.object({
@@ -35,13 +35,20 @@ export default function Register() {
     resolver: zodResolver(registerSchema),
   });
 
+  useEffect(() => {
+    if (isAuthenticated()) {
+      router.push("/dashboard");
+    }
+  }, [router]);
+
+
   const onSubmit = async (data: RegisterForm) => {
     setIsLoading(true);
     setError("");
 
     try {
       const response = await authService.register(data)
-      console.log("Response ",response)
+      console.log("Response ", response)
       if (response) {
         router.push("/login");
       }
