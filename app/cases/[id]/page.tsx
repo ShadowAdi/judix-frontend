@@ -84,12 +84,10 @@ export default function CaseDetail() {
     if (!case_) return;
 
     try {
-      await apiClient.patch(`/api/cases/${caseId}`, { isArchived: true });
+      await caseService.update(caseId,{ isArchived: true });
       router.push("/dashboard");
     } catch (error) {
       console.error("Failed to archive case:", error);
-      // For demo, redirect anyway
-      router.push("/dashboard");
     }
   };
 
@@ -203,8 +201,8 @@ export default function CaseDetail() {
                         onChange={(e) => setEditedStatus(e.target.value as "draft" | "active" | "closed")}
                         className="ml-2 px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                       >
-                        <option value="open">Open</option>
-                        <option value="in-progress">In Progress</option>
+                        <option value="draft">Draft</option>
+                        <option value="active">Active</option>
                         <option value="closed">Closed</option>
                       </select>
                     ) : (
