@@ -9,31 +9,39 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select } from "@/components/ui/select";
-import { apiClient } from "@/lib/auth";
+import { apiClient, caseService, CaseCreateInterface } from "@/lib/auth";
 
 const caseSchema = z.object({
   title: z.string().min(1, "Title is required"),
+  description: z.string().optional().or(z.literal("")),
   clientName: z.string().min(1, "Client name is required"),
-  clientEmail: z.string().email("Invalid email address"),
-  caseType: z.string().min(1, "Case type is required"),
-  filedDate: z.string().min(1, "Filed date is required"),
-  description: z.string().min(1, "Description is required"),
+  clientEmail: z.string().email("Invalid email").optional().or(z.literal("")),
+  caseType: z.enum([
+    "civil",
+    "criminal",
+    "contract",
+    "corporate",
+    "other",
+  ]),
+  status: z.enum(["draft", "active", "closed"]),
+  filedAt: z.string().min(1, "Filed date is required"),
 });
 
-type CaseForm = z.infer<typeof caseSchema>;
-
 const caseTypes = [
-  "Civil Litigation",
-  "Criminal Defense",
-  "Family Law",
-  "Corporate Law",
-  "Real Estate",
-  "Personal Injury",
-  "Immigration",
-  "Intellectual Property",
-  "Employment Law",
-  "Tax Law",
+  { label: "Civil", value: "civil" },
+  { label: "Criminal", value: "criminal" },
+  { label: "Contract", value: "contract" },
+  { label: "Corporate", value: "corporate" },
+  { label: "Other", value: "other" },
 ];
+
+
+const statusOptions = [
+  { label: "Draft", value: "draft" },
+  { label: "Active", value: "active" },
+  { label: "Closed", value: "closed" },
+];
+type CaseForm = z.infer<typeof caseSchema>;
 
 interface CaseFormProps {
   onSuccess?: () => void;
@@ -52,6 +60,9 @@ export function CaseFormComponent({ onSuccess, onCancel }: CaseFormProps) {
     formState: { errors },
   } = useForm<CaseForm>({
     resolver: zodResolver(caseSchema),
+    defaultValues: {
+      status: "draft",
+    },
   });
 
   const onSubmit = async (data: CaseForm) => {
@@ -60,7 +71,13 @@ export function CaseFormComponent({ onSuccess, onCancel }: CaseFormProps) {
     setSuccess(false);
 
     try {
-      await apiClient.post("/api/cases", data);
+      const cleanedData = {
+        ...data,
+        description: data.description || undefined,
+        clientEmail: data.clientEmail || undefined,
+      };
+
+      await caseService.create(cleanedData);
       setSuccess(true);
       reset();
       onSuccess?.();
@@ -113,7 +130,7 @@ export function CaseFormComponent({ onSuccess, onCancel }: CaseFormProps) {
         </div>
 
         <div>
-          <Label htmlFor="clientEmail">Client Email</Label>
+          <Label htmlFor="clientEmail">Client Email (Optional)</Label>
           <Input
             id="clientEmail"
             type="email"
@@ -127,7 +144,7 @@ export function CaseFormComponent({ onSuccess, onCancel }: CaseFormProps) {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
           <Label htmlFor="caseType">Case Type</Label>
           <select
@@ -137,8 +154,8 @@ export function CaseFormComponent({ onSuccess, onCancel }: CaseFormProps) {
           >
             <option value="">Select case type</option>
             {caseTypes.map((type) => (
-              <option key={type} value={type}>
-                {type}
+              <option key={type.label} value={type.value}>
+                {type.label}
               </option>
             ))}
           </select>
@@ -148,21 +165,39 @@ export function CaseFormComponent({ onSuccess, onCancel }: CaseFormProps) {
         </div>
 
         <div>
+          <Label htmlFor="status">Status</Label>
+          <select
+            id="status"
+            {...register("status")}
+            className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            {statusOptions.map((status) => (
+              <option key={status.value} value={status.value}>
+                {status.label}
+              </option>
+            ))}
+          </select>
+          {errors.status && (
+            <p className="text-red-600 text-sm mt-1">{errors.status.message}</p>
+          )}
+        </div>
+
+        <div>
           <Label htmlFor="filedDate">Filed Date</Label>
           <Input
             id="filedDate"
             type="date"
-            {...register("filedDate")}
+            {...register("filedAt")}
             className="mt-1"
           />
-          {errors.filedDate && (
-            <p className="text-red-600 text-sm mt-1">{errors.filedDate.message}</p>
+          {errors.filedAt && (
+            <p className="text-red-600 text-sm mt-1">{errors.filedAt.message}</p>
           )}
         </div>
       </div>
 
       <div>
-        <Label htmlFor="description">Description</Label>
+        <Label htmlFor="description">Description (Optional)</Label>
         <Textarea
           id="description"
           {...register("description")}

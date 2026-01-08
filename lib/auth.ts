@@ -25,6 +25,16 @@ export interface CaseInterface {
   updatedAt: string;
 }
 
+export interface CaseCreateInterface {
+  title: string;
+  description?: string;
+  clientName: string;
+  clientEmail?: string;
+  caseType: "civil" | "criminal" | "contract" | "corporate" | "other";
+  status: "draft" | "active" | "closed";
+  filedAt: string;
+}
+
 export interface User {
   id: string;
   email: string;
@@ -193,14 +203,14 @@ export const caseService = {
     }
   },
 
-  create: async (caseData: Partial<CaseInterface>): Promise<CaseInterface> => {
+  create: async (caseData: CaseCreateInterface): Promise<CaseInterface> => {
     try {
       const response = await api.post('case', caseData, {
         headers: {
           Authorization: `Bearer ${getToken()}`
         }
       });
-      return response.data.tit;
+      return response.data.title;
     } catch (error: any) {
       throw new Error(error.response?.data?.message || 'Failed to create case');
     }
