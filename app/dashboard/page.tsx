@@ -152,8 +152,8 @@ export default function Dashboard() {
                 className="pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
               >
                 <option value="">All Statuses</option>
+                <option value="draft">Draft</option>
                 <option value="open">Open</option>
-                <option value="in-progress">In Progress</option>
                 <option value="closed">Closed</option>
               </select>
             </div>
