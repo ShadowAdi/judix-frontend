@@ -61,6 +61,7 @@ export default function Dashboard() {
 
   const handleLogout = () => {
     removeToken();
+    toast.success("Logged Out")
     router.push("/login");
   };
 
