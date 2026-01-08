@@ -93,7 +93,7 @@ export default function Dashboard() {
                   variant="outline"
                   size="sm"
                   onClick={handleLogout}
-                  className="flex items-center gap-2"
+                  className="flex items-center gap-2 cursor-pointer!"
                 >
                   <LogOut className="h-4 w-4" />
                   Logout
@@ -112,7 +112,7 @@ export default function Dashboard() {
             
             <Button
               onClick={() => setShowCreateForm(true)}
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 cursor-pointer!"
             >
               <Plus className="h-4 w-4" />
               Create Case

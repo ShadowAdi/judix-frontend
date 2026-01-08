@@ -96,7 +96,7 @@ export default function Login() {
 
           <Button
             type="submit"
-            className="w-full"
+            className="w-full cursor-pointer!"
             disabled={isLoading}
           >
             {isLoading ? "Signing in..." : "Sign In"}

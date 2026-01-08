@@ -8,8 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select } from "@/components/ui/select";
-import { apiClient, caseService, CaseCreateInterface } from "@/lib/auth";
+import { caseService } from "@/lib/auth";
 
 const caseSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -215,13 +214,14 @@ export function CaseFormComponent({ onSuccess, onCancel }: CaseFormProps) {
           <Button
             type="button"
             variant="outline"
+            className="cursor-pointer!"
             onClick={onCancel}
             disabled={isLoading}
           >
             Cancel
           </Button>
         )}
-        <Button type="submit" disabled={isLoading}>
+        <Button type="submit" disabled={isLoading} className="cursor-pointer!">
           {isLoading ? "Creating..." : "Create Case"}
         </Button>
       </div>
